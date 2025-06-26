@@ -42,8 +42,8 @@ export class AuthService {
         user: user.toJSON() as Omit<User, 'password'>,
         ...tokens,
       };
-    } catch (error) {
-      if (error.code === '23505') { // PostgreSQL unique violation
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'code' in error && error.code === '23505') { // PostgreSQL unique violation
         throw new BadRequestException('User with this email already exists');
       }
       throw error;
@@ -102,6 +102,9 @@ export class AuthService {
 
   async getCurrentUser(userId: string): Promise<Omit<User, 'password'>> {
     const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
     return user.toJSON() as Omit<User, 'password'>;
   }
 }

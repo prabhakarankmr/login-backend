@@ -18,7 +18,7 @@ async function bootstrap() {
     duration: 60, // Per 60 seconds
   });
 
-  app.use(async (req, res, next) => {
+  app.use(async (req: { ip: string | number; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: string): void; new(): any; }; }; }, next: () => void) => {
     try {
       await rateLimiter.consume(req.ip);
       next();
@@ -59,7 +59,7 @@ async function bootstrap() {
   });
 
   const port = configService.get<number>('PORT') || 3001;
-  await app.listen(port, '0.0.0.0');
+  await app.listen(port, 'localhost');
   
   console.log(`Application is running on: http://localhost:${port}`);
 }
